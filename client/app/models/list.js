@@ -1,26 +1,22 @@
-var List = Backbone.Collection.Extend({
+var List = Backbone.Collection.extend({
   model: Item,
 
   initialize: function() {
-
-    this.on('insert', function(value) {
-      this.add(value);
-    }, this);
-
     this.on('delete', function(item) {
       this.delete(item);
     }, this);
   },
 
-  add: function(value) {
-    this.add(new Item({
-      depth: this.depth,
-      value: value
-    }));
+  insert: function(value, depth) {
+    var child = new Item({
+      value: value,
+      depth: depth
+    }); 
+    this.add(child);
+    return child;
   },
 
   delete: function(item) {
     this.remove(item);
-    item.destroy();
   }
 });
