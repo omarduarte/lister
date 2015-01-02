@@ -9,20 +9,20 @@ var Item = Backbone.Model.extend({
   },
 
   delete: function() {
-    console.log('Detaching', this.get('value'), 'from parent list');    
+    this.deleteChildren();
+
     this.trigger('delete', this);
 
-    console.log('Destroying', this.get('value'));
     this.destroy();
   },
 
   deleteChildren: function() {
-    console.log('deleting children of', this.get('value'));
-    if (!this.get('children').isEmpty()) {
-      this.get('children').forEach(function(child) {
-        child.deleteChildren();
-        child.destroy();
-      });
+    var child;
+
+    while (child = this.get('children').first()) {
+      child.deleteChildren();
+      child.trigger('delete', child);
+      child.destroy();
     }
   },
 
