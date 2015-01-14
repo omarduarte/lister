@@ -7,10 +7,11 @@ var List = Backbone.Collection.extend({
     }, this);
   },
 
-  insert: function(value, depth) {
+  insert: function(value, depth, parentView) {
     var child = new Item({
       value: value,
-      depth: depth
+      depth: depth,
+      parentView: parentView
     }); 
     this.add(child);
     return child;
