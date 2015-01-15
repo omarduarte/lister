@@ -1,12 +1,10 @@
 var Item = Backbone.Model.extend({
   initialize: function() {
     this.set('children', new List());
-    this.set('view', new ItemView({ model: this }));
   },
   
   defaults: {
-    'value': '',
-    'depth': 0
+    'value': ''
   },
 
   delete: function() {
@@ -33,7 +31,9 @@ var Item = Backbone.Model.extend({
 
   addChild: function(value) {
     value = value || "Placeholder text."
-    return this.get('children').insert(value, this.get('depth') + 1, this.get('parentView'));
+    var child = this.get('children').insert(value);
+    this.trigger('append', child);
+    return child;
   },
 
   hasChildren: function() {

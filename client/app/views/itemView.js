@@ -1,8 +1,8 @@
 var ItemView = Backbone.View.extend({
 
-  el: '<div class="item"></div>',
+  el: '<ul class="item"></ul>',
 
-  template: _.template('<button class="add">+</button><button class="remove">-</button><button class="edit">pencil-icon</button><span class="value"><%- value %></span>'),
+  template: _.template('<li><button class="add">+</button><button class="remove">-</button><button class="edit">pencil-icon</button><span class="value"><%- value %></span></li>'),
 
   events: {
     'click .add': 'addChild',
@@ -10,20 +10,28 @@ var ItemView = Backbone.View.extend({
     'click .edit': 'edit'
   },
 
-  initialize: function() {
-    var parentView = this.model.get('parentView');
-    parentView.append(this.el);
+  childViews: [],
+
+  initialize: function(options) {
+
+    // this.listenTo(this.model, 'append', function(childModel) {
+    //   this.childViews.push(new ItemView({model: childModel, parent: this.$el}));
+    // });
+
+    this.model.on('append', function(childModel) {
+      this.childViews.push(new ItemView({model: childModel, parent: this.$el}));
+    }, this);
 
     this.model.on('remove',function() {
-      //this.children().detach();
       this.$el.detach();
-
     }, this)
     
+    options.parent.append(this.el);
     this.render();
   },
 
-  addChild: function() {
+  addChild: function(e) {
+    e.stopPropagation();
     this.model.addChild();
   },
 
@@ -31,15 +39,18 @@ var ItemView = Backbone.View.extend({
     this.model.delete();    
   },
 
-  edit: function() {
+  edit: function(e) {
+    e.stopPropagation();
     this.model.set('value', 'You have just clicked EDIT!');
+    this.update();
   },
 
   render: function() {
-    // Show item given depth
-    
-    var padding = (this.model.get('depth') * 20).toString() + 'px';
-    this.$el.css('padding-left', padding);
     this.$el.html(this.template(this.model.attributes));
+  },
+
+  update: function() {
+    var item = this.$el.find('li').first();
+    item.html(this.template(this.model.attributes));
   }
 });
